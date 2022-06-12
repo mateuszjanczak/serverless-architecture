@@ -33,8 +33,8 @@ data "aws_iam_policy_document" "sns_to_sqs_policy_document" {
     ]
 
     condition {
-      test     = "ArnEquals"
-      values   = [
+      test = "ArnEquals"
+      values = [
         module.topic.arn
       ]
       variable = "aws:SourceArn"
@@ -43,6 +43,12 @@ data "aws_iam_policy_document" "sns_to_sqs_policy_document" {
 }
 
 resource "aws_sqs_queue_policy" "sns_to_sqs_policy" {
-  policy = data.aws_iam_policy_document.sns_to_sqs_policy_document.json
+  policy    = data.aws_iam_policy_document.sns_to_sqs_policy_document.json
   queue_url = module.queue.id
+}
+
+module "dynamodb" {
+  source        = "./modules/dynamodb"
+  name          = "table"
+  hash_key_name = "id"
 }
