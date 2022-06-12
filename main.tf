@@ -98,3 +98,26 @@ resource "aws_lambda_event_source_mapping" "sqs_to_lambda_mapping" {
   event_source_arn = module.queue.arn
   function_name    = module.lambda.arn
 }
+
+data "aws_iam_policy_document" "lambda_dynamodb_policy_document" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "dynamodb:PutItem"
+    ]
+
+    resources = [
+      module.dynamodb.arn
+    ]
+  }
+}
+
+resource "aws_iam_policy" "lambda_dynamodb_policy" {
+  policy = data.aws_iam_policy_document.lambda_dynamodb_policy_document.json
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_dynamodb_policy_attachment" {
+  role       = module.lambda.role_name
+  policy_arn = aws_iam_policy.lambda_dynamodb_policy.arn
+}
