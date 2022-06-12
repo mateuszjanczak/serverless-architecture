@@ -17,3 +17,8 @@ variable "runtime" {
   type        = string
   description = "Identifier of the function's runtime."
 }
+
+variable "environment_variables" {
+  type        = map(string)
+  description = "Map of environment variables that are accessible from the function code during execution."
+}
