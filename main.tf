@@ -52,8 +52,8 @@ resource "aws_sqs_queue_policy" "sns_to_sqs_policy" {
 module "dynamodb" {
   source = "./modules/dynamodb"
 
-  name          = "table"
-  hash_key_name = "id"
+  name          = "messages"
+  hash_key_name = "MessageId"
 }
 
 module "lambda" {
@@ -63,4 +63,8 @@ module "lambda" {
   src     = "./src/index.js"
   handler = "index.handler"
   runtime = "nodejs14.x"
+
+  environment_variables = {
+    tableName = module.dynamodb.tableName
+  }
 }
