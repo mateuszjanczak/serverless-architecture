@@ -68,3 +68,33 @@ module "lambda" {
     tableName = module.dynamodb.tableName
   }
 }
+
+data "aws_iam_policy_document" "sqs_to_lambda_document" {
+  statement {
+    effect = "Allow"
+
+    actions = [
+      "SQS:ReceiveMessage",
+      "SQS:DeleteMessage",
+      "SQS:GetQueueAttributes"
+    ]
+
+    resources = [
+      module.queue.arn
+    ]
+  }
+}
+
+resource "aws_iam_policy" "sqs_to_lambda_policy" {
+  policy = data.aws_iam_policy_document.sqs_to_lambda_document.json
+}
+
+resource "aws_iam_role_policy_attachment" "sqs_to_lambda_role_policy_attachment" {
+  policy_arn = aws_iam_policy.sqs_to_lambda_policy.arn
+  role       = module.lambda.role_name
+}
+
+resource "aws_lambda_event_source_mapping" "sqs_to_lambda_mapping" {
+  event_source_arn = module.queue.arn
+  function_name    = module.lambda.arn
+}
