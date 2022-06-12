@@ -1,11 +1,13 @@
 module "queue" {
   source = "./modules/sqs"
-  name   = "queue"
+
+  name = "queue"
 }
 
 module "topic" {
   source = "./modules/sns"
-  name   = "topic"
+
+  name = "topic"
 }
 
 resource "aws_sns_topic_subscription" "sns_to_sqs_subscription" {
@@ -48,7 +50,17 @@ resource "aws_sqs_queue_policy" "sns_to_sqs_policy" {
 }
 
 module "dynamodb" {
-  source        = "./modules/dynamodb"
+  source = "./modules/dynamodb"
+
   name          = "table"
   hash_key_name = "id"
+}
+
+module "lambda" {
+  source = "./modules/lambda"
+
+  name    = "lambda"
+  src     = "./src/index.js"
+  handler = "index.handler"
+  runtime = "nodejs14.x"
 }
